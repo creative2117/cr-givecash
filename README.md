@@ -1,5 +1,5 @@
 # cr-givecash
-Adds a commands to give cash to a player. QBCore
+Adds a command to give cash to a player. QBCore
 
 How to use:
 /givecash [playerID] [value]
