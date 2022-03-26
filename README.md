@@ -5,3 +5,7 @@ How to use:
 /givecash [playerID] [value]
 
 Feel free to edit to your liking!
+
+# Support
+
+For support join my [discord](https://discord.gg/zFPCa6DuKp)
