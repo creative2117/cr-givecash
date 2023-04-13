@@ -1,3 +1,4 @@
+[![ko-fi](https://ko-fi.com/img/githubbutton_sm.svg)](https://ko-fi.com/X8X0KDPJQ)
 # cr-givecash
 Adds a command to give cash to a player. QBCore
 
