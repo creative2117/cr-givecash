@@ -1,4 +1,5 @@
 QBCore = exports['qb-core']:GetCoreObject()
+local discordWebhook = "PASTE_DISCORD_WEBHOOK_HERE"
 
 QBCore.Commands.Add('givecash', 'Give cash', {{name = 'id', help = 'ID'}, {name = 'amount', help = 'Amount cash'}}, true, function(source, args)
     local src = source
@@ -17,7 +18,8 @@ QBCore.Commands.Add('givecash', 'Give cash', {{name = 'id', help = 'ID'}, {name 
 						if xReciv.Functions.AddMoney('cash', amount) then
 							TriggerClientEvent('QBCore:Notify', src, "you gave money to " .. tostring(id) .. ' ' .. tostring(amount) .. '$.', "success")
 							TriggerClientEvent('QBCore:Notify', id, "you received money: $ " .. tostring(amount) .. ' from ' .. tostring(src), "success")
-							TriggerClientEvent("payanimation", src)
+                            TriggerClientEvent("payanimation", src)
+                            TriggerEvent('cr-givecash:server:log', source, id, amount)
 						else
 							TriggerClientEvent('QBCore:Notify', src, "could not give the money", "error")
 						end
@@ -36,4 +38,40 @@ QBCore.Commands.Add('givecash', 'Give cash', {{name = 'id', help = 'ID'}, {name 
 	else
 		TriggerClientEvent('QBCore:Notify', src, "Use /givecash [ID] [AMOUNT]", "error")
 	end
+end)
+
+RegisterNetEvent('cr-givecash:server:log', function(source, reciver, amount)
+	if discordWebhook == "PASTE_DISCORD_WEBHOOK_HERE" then return end
+    local discord
+    local reciverDiscord
+    for i = 0, GetNumPlayerIdentifiers(source) - 1 do
+        local identifier = GetPlayerIdentifier(source, i)
+
+        if identifier:find('discord') then
+            discord = string.sub(identifier, 9)
+        end
+    end
+    for i = 0, GetNumPlayerIdentifiers(reciver) - 1 do
+        local identifier = GetPlayerIdentifier(reciver, i)
+
+        if identifier:find('discord') then
+            reciverDiscord = string.sub(identifier, 9)
+        end
+    end
+    local embedData = {
+        {
+            ['title'] = "user gave cash",
+            ['color'] = 65280,
+            ['footer'] = {
+                ['text'] = os.date('%c'),
+            },
+            ['description'] = 'Sender CitizenID: ' .. QBCore.Functions.GetPlayer(source).PlayerData.citizenid .. '\nSender Discord: <@'.. discord .. '>\nReciver CitizenID: ' .. QBCore.Functions.GetPlayer(reciver).PlayerData.citizenid .. '\nReciver Discored: <@'.. reciverDiscord .. '>\nSent amount: ' .. amount,
+            ['author'] = {
+                ['name'] = 'Creative Development',
+                ['icon_url'] = 'https://media.discordapp.net/attachments/957021435652620298/1100495355755376640/Creative_development.png?width=449&height=449',
+            },
+        }
+    }
+    PerformHttpRequest(discordWebhook, function() end, 'POST', json.encode({ username = 'cr-givecash', embeds = embedData}), { ['Content-Type'] = 'application/json' })
+    Wait(100)
 end)
